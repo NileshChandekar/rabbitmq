@@ -102,6 +102,38 @@ A fanout exchange in RabbitMQ routes messages to all of the queues that are boun
 
 # Configuration :- 
 
+
+~~~
+[root@overcloud-controller-0 ~]# ls -lhrt /etc/rabbitmq/
+total 12K
+-rw-r--r--. 1 root root  23 Aug  8 04:11 rabbitmqadmin.conf
+drwxr-xr-x. 2 root root   6 Aug  8 04:11 ssl
+-rw-r--r--. 1 root root 905 Aug  8 04:11 rabbitmq.config
+-rw-r--r--. 1 root root 291 Aug  8 04:11 rabbitmq-env.conf
+[root@overcloud-controller-0 ~]# 
+~~~
+
+~~~
+[root@overcloud-controller-0 ~]# ls -lhrt /var/log/rabbitmq/
+total 1.5M
+-rw-r-----. 1 rabbitmq rabbitmq 151K Sep 25 09:46 rabbit@overcloud-controller-0.log-20180812.gz
+-rw-r-----. 1 rabbitmq rabbitmq 1.3M Sep 25 09:46 rabbit@overcloud-controller-0-sasl.log-20180926
+-rw-r-----. 1 root     root        0 Sep 25 09:46 startup_err
+-rw-r-----. 1 root     root      377 Sep 25 09:46 startup_log
+-rw-r-----. 1 rabbitmq rabbitmq    0 Sep 26 03:23 rabbit@overcloud-controller-0-sasl.log
+-rw-r-----. 1 rabbitmq rabbitmq    0 Sep 26 03:23 rabbit@overcloud-controller-0.log
+-rw-r-----. 1 rabbitmq rabbitmq 117K Sep 28 10:36 rabbit@overcloud-controller-0.log-20180926
+[root@overcloud-controller-0 ~]# 
+~~~
+
+~~~
+[root@overcloud-controller-0 ~]# ls -lhrt /var/lib/rabbitmq/mnesia/
+total 4.0K
+drwxr-x--x. 2 rabbitmq rabbitmq    6 Sep 25 09:46 rabbit@overcloud-controller-0-plugins-expand
+drwxr-x--x. 4 rabbitmq rabbitmq 4.0K Sep 25 09:49 rabbit@overcloud-controller-0
+[root@overcloud-controller-0 ~]#
+~~~
+
 ~~~
 [root@overcloud-controller-0 ~]# egrep -v "^#|^$" /etc/rabbitmq/rabbitmqadmin.conf 
 [default]
@@ -159,4 +191,98 @@ RABBITMQ_SERVER_ERL_ARGS="+K true +P 1048576 -kernel inet_default_connect_option
 
 # Mnesia 
 
-# Use Cases ? How to ?
+~~~
+[root@overcloud-controller-0 ~]# ls -lhrt /var/lib/rabbitmq/mnesia/
+total 4.0K
+drwxr-x--x. 2 rabbitmq rabbitmq    6 Sep 25 09:46 rabbit@overcloud-controller-0-plugins-expand
+drwxr-x--x. 4 rabbitmq rabbitmq 4.0K Sep 25 09:49 rabbit@overcloud-controller-0
+[root@overcloud-controller-0 ~]#
+~~~
+
+
+~~~
+To fix rabbitmq can you first do :- 
+
+pcs resource disable rabbitmq on one controller. 
+
+Then go to controller and Do 
+
+ps aux|grep rabbit  ;  then 
+
+pkill rabbitmq; 
+
+kill -9 for any remaining rabbitmq processes. 
+~~~
+
+Remove your mnesia  and then 
+
+~~~
+re-enable the service by 
+
+pcs resource enable rabbitmq 
+
+pacemaker will try to fresh start the services
+
+wait about 2 minutes ; then 
+
+do pcs resource cleanup to finish the job. Finally check 
+
+pcs status |grep -A1 rabbit to see if it's correctly re-started.
+~~~
+
+Begind the scene 
+
+~~~
+This can be happened when - 
+	a) client request RabbitMQ
+	b) RabbitMQ request to Server 
+	c) Server process the request and produces the response. 
+	d) server send response messages to rabbitmq
+	e) Finally  rabbitmq response to the Client. 
+~~~
+
+So in the above call when the process gets stuck on any step from b to e, client gets a "Timed out waiting for RPC response" execption. 
+
+So to diagnosis this we need to check the queues :-
+
+~~~
+# rabbitmqctl list_queues
+# rabbitmqctl list_queues name consumers name
+# rabbitmqctl list_queues name consumers messages | grep -vw "0$"
+~~~
+
+If a queue has a consumers, but also has a messages are accumulating there, It means that the corrsoponding service can not process messages in time or got stuck in a deadlock. 
+
+
+Check RabbitMQ for integrity 
+~~~
+# rabbitmqctl cluster_status
+~~~
+
+If the above command returs all the nodes in the cluster, You might find that your cluster is partitioned. 
+Partition is a good reason for some messages to get stuck in queues. 
+
+
+Restart `rabbitmq` services help in this situation. This will release the stuck messgaes, 
+
+
+# Use Cases ? How to ? Configurations ?
+
+~~~
+$ rabbitmq-server -detached
+$ rabbitmqctl stop_app
+$ rabbitmqctl reset
+$ rabbitmqctl join_cluster rabbit@overcloud-controller-0
+$ rabbitmqctl start_app
+
+$ rabbitmqctl cluster_status
+# rabbitmqctl eval "rabbit_diagnostics:maybe_stuck()."
+# rabbitmqctl status |grep -i file -A4
+# rabbitmqctl report
+# rabbitmqctl list_queues name consumers messages | grep -vw "0$"
+
+# sos_commands/rabbitmq/rabbitmqctl_cluster_status 
+~~~
+
+
+
