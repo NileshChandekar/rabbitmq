@@ -100,3 +100,7 @@ A fanout exchange in RabbitMQ routes messages to all of the queues that are boun
 
 ![Image ipa](https://github.com/NileshChandekar/rabbitmq/blob/master/Ceilometer-multi-publish2.jpg)
 
+
+# Mnesia 
+
+# Use Cases ? How to ?
