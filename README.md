@@ -84,13 +84,19 @@ A fanout exchange in RabbitMQ routes messages to all of the queues that are boun
 
 # Message Exchange 
 
+~~~
 ![Image ipa](https://github.com/NileshChandekar/rabbitmq/blob/master/Screen%20Shot%202017-04-05%20at%204.12.40%20PM.png)
+~~~
 
 # How in Openstack ?
 
+~~~
 ![Image ipa](https://github.com/NileshChandekar/rabbitmq/blob/master/openstackrabbitmq.png)
+~~~
+
 
 # Call trace 
 
+~~~
 ![Image ipa](https://github.com/NileshChandekar/rabbitmq/blob/master/Ceilometer-multi-publish2.jpg)
-
+~~~
