@@ -230,7 +230,7 @@ do pcs resource cleanup to finish the job. Finally check
 pcs status |grep -A1 rabbit to see if it's correctly re-started.
 ~~~
 
-Begind the scene 
+Behind the scene 
 
 ~~~
 This can be happened when - 
