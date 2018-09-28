@@ -100,6 +100,62 @@ A fanout exchange in RabbitMQ routes messages to all of the queues that are boun
 
 ![Image ipa](https://github.com/NileshChandekar/rabbitmq/blob/master/Ceilometer-multi-publish2.jpg)
 
+# Configuration :- 
+
+~~~
+[root@overcloud-controller-0 ~]# egrep -v "^#|^$" /etc/rabbitmq/rabbitmqadmin.conf 
+[default]
+port = 15672
+[root@overcloud-controller-0 ~]# 
+~~~
+
+~~~
+[root@overcloud-controller-0 ~]# egrep -v "^#|^$" /etc/rabbitmq/rabbitmq.config 
+% This file managed by Puppet
+% Template Path: rabbitmq/templates/rabbitmq.config
+[
+  {rabbit, [
+    {tcp_listen_options,
+         [binary,
+         {packet,        raw},
+         {reuseaddr,     true},
+         {backlog,       128},
+         {nodelay,       true},
+         {linger,        {true, 0}},
+         {exit_on_close, false}]
+    },
+    {cluster_partition_handling, pause_minority},
+    {loopback_users, []},
+    {queue_master_locator, <<"min-masters">>},
+    {tcp_listen_options, [binary, {packet, raw}, {reuseaddr, true}, {backlog, 128}, {nodelay, true}, {exit_on_close, false}, {keepalive, true}]},
+    {default_user, <<"guest">>},
+    {default_pass, <<"G68QE3cWRR4t4pdp2d6qFRnPw">>}
+  ]},
+  {kernel, [
+    {inet_dist_listen_max, 25672},
+    {inet_dist_listen_min, 25672}
+  ]}
+,
+  {rabbitmq_management, [
+    {listener, [
+      {port, 15672}
+      ,{ip, "192.168.24.16"}
+    ]}
+  ]}
+].
+% EOF
+~~~
+
+~~~
+[root@overcloud-controller-0 ~]# egrep -v "^#|^$" /etc/rabbitmq/rabbitmq-env.conf 
+NODE_IP_ADDRESS=192.168.24.16
+NODE_PORT=5672
+RABBITMQ_NODENAME=rabbit@overcloud-controller-0
+RABBITMQ_SERVER_ERL_ARGS="+K true +P 1048576 -kernel inet_default_connect_options [{nodelay,true},{raw,6,18,<<5000:64/native>>}] -kernel inet_default_listen_options [{raw,6,18,<<5000:64/native>>}]"
+[root@overcloud-controller-0 ~]# 
+~~~
+
+
 
 # Mnesia 
 
