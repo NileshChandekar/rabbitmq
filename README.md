@@ -42,6 +42,9 @@ The routing key is a message attribute. This is how the routing algorithm is for
 ~~~
 
 
+![Image ipa](https://github.com/NileshChandekar/rabbitmq/blob/master/hello-world-example-routing.png)
+
+
 # What are the different types of exchanges in RabbitMQ?
 
 
@@ -58,7 +61,7 @@ There are primarily 4 types of exchanges in RabbitMQ
 ~~~
 
 
-![Image ipa](https://github.com/NileshChandekar/tagged_vlan_between_switch_and_end_device/blob/master/ipa.png)
+![Image ipa](https://github.com/NileshChandekar/rabbitmq/blob/master/exchanges-topic-fanout-direct.png)
 
 
 
@@ -79,4 +82,13 @@ A fanout exchange in RabbitMQ routes messages to all of the queues that are boun
 
 
 
+
+![Image ipa](https://github.com/NileshChandekar/rabbitmq/blob/master/Screen%20Shot%202017-04-05%20at%204.12.40%20PM.png)
+
+
+![Image ipa](https://github.com/NileshChandekar/rabbitmq/blob/master/openstackrabbitmq.png)
+
+
+
+![Image ipa](https://github.com/NileshChandekar/rabbitmq/blob/master/Ceilometer-multi-publish2.jpg)
 
