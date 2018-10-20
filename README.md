@@ -65,7 +65,7 @@ There are primarily 4 types of exchanges in RabbitMQ
 
 
 
-# What is direct Exchange in RabbitMQ ?
+# What is Direct Exchange in RabbitMQ ?
 
 ~~~
 Direct Exchange is used for the purpose of delivering message to the queue whose binding key exactly matches to message routing key.
@@ -74,11 +74,24 @@ Direct Exchange is used for the purpose of delivering message to the queue whose
 If no matching queue can be found for the message, the message will be silently dropped. RabbitMQ provides an AMQP extension known as the "Dead Letter Exchange" - the dead letter exchange provides functionality to capture messages that are not deliverable.
 ~~~
 
-# What is fanout Exchange in RabbitMQ?
+# What is Topic Exchange in RabbitMQ?
+~~~
+Topic exchanges route messages to one or many queues based on matching between a message routing key and the pattern that was used to bind a queue to an exchange. Topic exchanges are commonly used for the multicast routing of messages.
+~~~
+
+
+
+# What is Fanout Exchange in RabbitMQ?
 
 ~~~
 A fanout exchange in RabbitMQ routes messages to all of the queues that are bound to it and it completely ignores the routing key.
 ~~~
+
+# What is Header Exchange in RabbitMQ?
+~~~
+A headers exchange is designed to for routing on multiple attributes that are more easily expressed as message headers than a routing key. Headers exchanges ignore the routing key attribute. Instead, the attributes used for routing are taken from the headers attribute. A message is considered matching if the value of the header equals the value specified upon binding.
+~~~
+
 
 
 
